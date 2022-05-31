@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!-- saved from url=(0035)https://yoyyyyo.github.io/claim-op/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head>
+  <body data-new-gr-c-s-check-loaded="14.1062.0" data-gr-ext-installed="" data-new-gr-c-s-loaded="14.1062.0">
+    <p>the code for this page is pretty self explanatory and i encourage you to hit ctrl+u and read it.</p>
+    <p>this page is not endorsed or ran by optimism, this page is not financial advice</p>
+    step 1: <button class="connect">connect wallet</button>
+    <p>
+      step 2: go to https://gateway-backend-mainnet.optimism.io/proof/&lt;your address goes here&gt; and copy in all the details here
+    </p>
+    
+    <div>
+      step 3: paste data from page linked above here - <textarea></textarea>
+    </div>
+    
+    <div> step 4: ensure you are on the optimism chain in metamask/whatever wallet before you hit send tx</div>
+    <div> step 5: <button class="send">send tx</button></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.2.0/ethers.umd.min.js" integrity="sha512-YrJ7ZzmtmVJdwCwu6B91ThUGLfNjsTdHf1IdPf3J7AZQIpVDvahcBLWoKC1ebZ9RN6upm9ZheIFKSf7s7k/ZYQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+      document.querySelector('.connect').onclick = async () =>  {
+
+        console.log(window.ethereum)
+        if (window.ethereum) { //check if Metamask is installed
+        try {
+            const address = await window.ethereum.enable(); //connect Metamask
+            const obj = {
+                    connectedStatus: true,
+                    status: "",
+                    address: address
+                }
+                return obj;
+             
+        } catch (error) {
+            return {
+                connectedStatus: false,
+                status: "🦊 Connect to Metamask using the button on the top right."
+            }
+        }
+        
+  } else {
+        return {
+            connectedStatus: false,
+            status: "🦊 You must install Metamask into your browser: https://metamask.io/download.html"
+        }
+      } 
+      }
+      document.querySelector('.send').onclick = () => {
+        let data;
+        try {
+          const blob = document.querySelector('textarea').value;
+          data = JSON.parse(blob);
+        } catch(e) {
+          alert('error occurred while parsing data blob');
+          console.log(e);
+        }
+        
+        
+        if (!data.index || !data.amount || !data.proof)
+           return alert('data is missing index or amount or proof')
+       
+         if (!ethereum.selectedAddress)
+           return alert('no ethereum wallet linked');
+        
+        try {
+          new ethers.Contract(
+             '0xfedfaf1a10335448b7fa0268f56d2b44dbd357de', 
+             ['function claim(uint,address,uint,bytes32[])'],
+             new ethers.providers.Web3Provider(window.ethereum).getSigner()
+          ).claim(
+            data.index,
+            ethereum.selectedAddress,
+            data.amount, data.proof
+          )
+        } catch(e) {
+          alert('error occurred while sending tx: ' + (data.message || data));
+          console.error(e);
+        }
+        
+      }
+    
+    </script>
+  
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration></html>
